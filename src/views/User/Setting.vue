@@ -1,12 +1,12 @@
 <template>
   <div>
-    <h2>404</h2>
+    <h1>个人中心</h1>
   </div>
 </template>
 
 <script>
 export default {
-  name: '',
+  name: 'Setting',
   data() {
     return {}
   },

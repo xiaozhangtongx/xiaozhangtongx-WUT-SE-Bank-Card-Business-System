@@ -6,7 +6,7 @@
         <div class="logo">
           银行卡管理系统
         </div>
-        <SiderMenu :themes="navTheme" />
+        <SiderMenu :theme="navTheme" />
       </a-layout-sider>
       <a-layout>
         <a-layout-header style="background: #fff; padding: 0">
