@@ -9,6 +9,10 @@ var _vue = _interopRequireDefault(require("vue"));
 
 var _vueRouter = _interopRequireDefault(require("vue-router"));
 
+var _findLast = _interopRequireDefault(require("lodash/findLast"));
+
+var _antDesignVue = require("ant-design-vue");
+
 var _BasicLayout = _interopRequireDefault(require("@/layouts/BasicLayout"));
 
 var _ = _interopRequireDefault(require("../views/Error/404.vue"));
@@ -16,6 +20,8 @@ var _ = _interopRequireDefault(require("../views/Error/404.vue"));
 var _nprogress = _interopRequireDefault(require("nprogress"));
 
 require("nprogress/nprogress.css");
+
+var _auth = require("../utils/auth");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -27,7 +33,11 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 _vue["default"].use(_vueRouter["default"]);
 
-var routes = [// 登录注册页面
+var routes = [// 路由重定向
+{
+  path: '/',
+  redirect: '/user'
+}, // 登录注册页面
 {
   path: '/user',
   component: function component() {
@@ -54,12 +64,12 @@ var routes = [// 登录注册页面
     path: '/user',
     redirect: '/user/login'
   }]
-}, {
-  path: '/',
-  redirect: '/user'
 }, // 功能页面
 {
   path: '/main',
+  meta: {
+    authority: ['user', 'admin']
+  },
   component: _BasicLayout["default"],
   children: [// 系统首页
   {
@@ -79,7 +89,8 @@ var routes = [// 登录注册页面
     path: '/main/users',
     meta: {
       icon: 'team',
-      title: '用户管理'
+      title: '用户管理',
+      authority: ['admin']
     },
     name: 'Users',
     component: function component() {
@@ -141,6 +152,16 @@ var routes = [// 登录注册页面
       });
     }
   }]
+}, // 401页面
+{
+  path: '/401',
+  name: '401',
+  hideInMenu: true,
+  component: function component() {
+    return Promise.resolve().then(function () {
+      return _interopRequireWildcard(require('../views/Error/401.vue'));
+    });
+  }
 }, // 404页面
 {
   path: '*',
@@ -155,6 +176,29 @@ var router = new _vueRouter["default"]({
 router.beforeEach(function (to, from, next) {
   if (to.path != from.path) {
     _nprogress["default"].start();
+  }
+
+  var record = (0, _findLast["default"])(to.matched, function (record) {
+    return record.meta.authority;
+  }); // 判断权限
+
+  if (record && !(0, _auth.check)(record.meta.authority)) {
+    if (!(0, _auth.isLogin)() && to.path !== '/user/login') {
+      next({
+        path: '/user/login'
+      });
+    } else if (to.path !== '/401') {
+      _antDesignVue.notification.error({
+        message: '401',
+        description: '你没有权限访问，请联系管理员咨询。'
+      });
+
+      next({
+        path: '/401'
+      });
+    }
+
+    _nprogress["default"].done();
   }
 
   next();

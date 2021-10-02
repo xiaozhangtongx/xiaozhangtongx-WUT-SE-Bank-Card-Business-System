@@ -4,8 +4,10 @@ import 'ant-design-vue/dist/antd.less'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import Authorized from '@/components/Authorized'
 
 Vue.config.productionTip = false
+Vue.component('Authorized', Authorized)
 Vue.use(Antd)
 
 new Vue({

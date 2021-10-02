@@ -64,6 +64,7 @@ export default {
     },
     getMenuData(routes = [], parentKeys = [], selectedKey) {
       const menuData = []
+      // 权限的动态生成
       for (let item of routes) {
         if (item.meta && item.meta.authority && !check(item.meta.authority)) {
           continue

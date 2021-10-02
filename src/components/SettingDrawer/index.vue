@@ -4,7 +4,7 @@
       width="300px">
       <template v-slot:handle>
         <div class="handle" @click="visible=!visible">
-          <a-icon :type="visible?'close':'setting'"></a-icon>
+          <a-icon :type="visible?'close':'setting'" style="color:white"></a-icon>
         </div>
       </template>
       <template>

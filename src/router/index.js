@@ -1,13 +1,21 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import findLast from 'lodash/findLast'
+import { notification } from 'ant-design-vue'
 import BasicLayout from '@/layouts/BasicLayout'
 import NotFound from '../views/Error/404.vue'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
+import { check, isLogin } from '../utils/auth'
 
 Vue.use(VueRouter)
 
 const routes = [
+  // 路由重定向
+  {
+    path: '/',
+    redirect: '/user',
+  },
   // 登录注册页面
   {
     path: '/user',
@@ -28,13 +36,11 @@ const routes = [
       },
     ],
   },
-  {
-    path: '/',
-    redirect: '/user',
-  },
+
   // 功能页面
   {
     path: '/main',
+    meta: { authority: ['user', 'admin'] },
     component: BasicLayout,
     children: [
       // 系统首页
@@ -47,7 +53,7 @@ const routes = [
       // 用户管理
       {
         path: '/main/users',
-        meta: { icon: 'team', title: '用户管理' },
+        meta: { icon: 'team', title: '用户管理', authority: ['admin'] },
         name: 'Users',
         component: () => import('../views/Home/Home.vue'),
         children: [
@@ -83,6 +89,14 @@ const routes = [
       },
     ],
   },
+  // 401页面
+  {
+    path: '/401',
+    name: '401',
+    hideInMenu: true,
+    component: () =>
+      import(/* webpackChunkName: "exception" */ '../views/Error/401.vue'),
+  },
   // 404页面
   {
     path: '*',
@@ -100,6 +114,24 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   if (to.path != from.path) {
     NProgress.start()
+  }
+  const record = findLast(to.matched, (record) => record.meta.authority)
+  // 判断权限
+  if (record && !check(record.meta.authority)) {
+    if (!isLogin() && to.path !== '/user/login') {
+      next({
+        path: '/user/login',
+      })
+    } else if (to.path !== '/401') {
+      notification.error({
+        message: '401',
+        description: '你没有权限访问，请联系管理员咨询。',
+      })
+      next({
+        path: '/401',
+      })
+    }
+    NProgress.done()
   }
   next()
 })

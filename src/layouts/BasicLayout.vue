@@ -23,7 +23,11 @@
         </a-layout-footer>
       </a-layout>
     </a-layout>
-    <SettingDrawer></SettingDrawer>
+    <!-- 设计权限 -->
+    <Authorized :authority="['admin']">
+      <SettingDrawer></SettingDrawer>
+    </Authorized>
+
   </div>
 </template>
 
