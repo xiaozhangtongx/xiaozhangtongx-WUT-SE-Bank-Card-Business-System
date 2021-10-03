@@ -5,6 +5,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import Authorized from '@/components/Authorized'
+import axios from 'axios'
 
 Vue.config.productionTip = false
 Vue.component('Authorized', Authorized)

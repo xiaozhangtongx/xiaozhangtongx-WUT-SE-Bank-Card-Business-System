@@ -14,6 +14,8 @@ var _store = _interopRequireDefault(require("./store"));
 
 var _Authorized = _interopRequireDefault(require("@/components/Authorized"));
 
+var _axios = _interopRequireDefault(require("axios"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 _vue["default"].config.productionTip = false;
